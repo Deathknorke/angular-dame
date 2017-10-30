@@ -1,0 +1,14 @@
+mat-grid-tile {
+    background: snow;
+  }
+
+mat-grid-list {
+    flex: 1;
+    min-width: 300px;    
+    max-width: 66vh;
+    padding-bottom: 0 !important;
+ }
+.black {
+    background-color: black;
+}
+
