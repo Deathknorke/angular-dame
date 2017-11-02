@@ -11,7 +11,9 @@ export class FigureComponent implements OnInit {
 
   @Input() figure: Figure;
 
-  constructor() { }
+  constructor() {
+    
+   }
 
   ngOnInit() {
   }
