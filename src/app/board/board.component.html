@@ -1,7 +1,8 @@
   <mat-grid-list [cols]="board[0].length">
     <div class="boardRow" *ngFor="let row of board; let y = index">
       <mat-grid-tile class="field" *ngFor="let figure of row; let x = index" [class.black]="(y * board.length + x) % 2 !== y % 2">
-        <app-figure *ngIf="figure" [figure]="figure"></app-figure>
+        <app-figure *ngIf="figure" [figure]="figure" (onSelect)="displayedMoves=$event" [moves]="getMoves(y,x)"></app-figure>
+        <button mat-button *ngIf="isActive(y,x)" (click)="doMove(y,x)"></button>
       </mat-grid-tile>
     </div>
   </mat-grid-list>

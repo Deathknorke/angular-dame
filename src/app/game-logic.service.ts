@@ -3,12 +3,12 @@ import { Injectable, OnInit } from '@angular/core';
 
 export class Figure {
   public Dame = false;
-  public Moves: Move[];
   constructor(public color: Color) { }
 }
 
 export class Move {
-  constructor(public yCord: number, public xCord: number) { }
+  public Punch = false;
+  constructor(public yCord: number, public xCord: number, public yCordFrom: number, public xCordFrom: number) { }
 }
 
 export enum Color {
@@ -16,12 +16,19 @@ export enum Color {
   WHITE
 }
 
+enum Direction {
+  RIGHT,
+  LEFT,
+  TOP,
+  BOTTOM
+}
+
 @Injectable()
 export class GameLogicService {
 
   private _board: Figure[][];
 
-  private _currenPlayer: Color = Color.BLACK;
+  private _currenPlayer: Color = Color.WHITE;
   private _playgroundSize = 8;
 
   constructor() {
@@ -60,67 +67,81 @@ export class GameLogicService {
     return board;
   }
 
-  calculateBoard() {
-    const board = this._board;
-    for (var i = 0; i < board.length; i++) {
-      var row = board[i];
-
-      for (var j = 0; j < row.length; j++) {
-        var cell = row[j];
-
-        if (cell && cell.color === this._currenPlayer) {
-          cell.Moves = this.getMoves(i, j);
-        }
-
-      }
-    }
-
-    this._board = board;
-  }
-
   getMoves(yCord: number, xCord: number): Move[] {
+    if (this._board[yCord][xCord].color != this._currenPlayer) {
+      return [];
+    }
     const possibleMoves = [];
-    let cell;
-    debugger;
-    if ((yCord + 1) < this._board.length && (xCord - 1) >= 0) {
-      cell = this._board[yCord + 1][xCord - 1];
-      if (cell == null) {
-        possibleMoves.push(new Move(yCord + 1, xCord - 1))
-      } else {
-        //Todo check for punch
-      }
+
+    let move = this.checkMove(yCord,xCord,Direction.BOTTOM,Direction.LEFT);
+    if(move){
+      possibleMoves.push(move);
     }
-    if ((yCord + 1) < this._board.length && (xCord + 1) < this._board.length) {
-      cell = this._board[yCord + 1][xCord + 1];
-      if (cell == null) {
-        possibleMoves.push(new Move(yCord + 1, xCord + 1))
-      } else {
-        //Todo check for punch
-      }
+    move = this.checkMove(yCord,xCord,Direction.BOTTOM,Direction.RIGHT);
+    if(move){
+      possibleMoves.push(move);
     }
-    if ((yCord - 1) >= 0 && (xCord - 1) >= 0) {
-      cell = this._board[yCord - 1][xCord - 1];
-      if (cell == null) {
-        possibleMoves.push(new Move(yCord - 1, xCord - 1))
-      } else {
-        //Todo check for punch
-      }
+    move = this.checkMove(yCord,xCord,Direction.TOP,Direction.LEFT);
+    if(move){
+      possibleMoves.push(move);
     }
-    if ((yCord - 1) >= 0 && (xCord + 1) < this._board.length) {
-      cell = this._board[yCord - 1][xCord + 1];
-      if (cell == null) {
-        possibleMoves.push(new Move(yCord - 1, xCord + 1))
-      } else {
-        //Todo check for punch
-      }
+    move = this.checkMove(yCord,xCord,Direction.TOP,Direction.RIGHT);
+    if(move){
+      possibleMoves.push(move);
     }
 
     return possibleMoves;
   }
 
+  checkMove(yCord: number, xCord: number, yDir: Direction,xDir:Direction):Move {
+
+    const yTo = this.getDirection(yDir, yCord);
+    const xTo = this.getDirection(xDir, xCord);
+    if ((yTo) < this._board.length && (xTo) < this._board.length) {
+      const cell = this._board[yCord + 1][xCord + 1];
+      if (cell == null) {
+        return new Move(yTo, xTo, yCord, xCord);
+      } else {
+        //Todo check for punch
+      }
+    }
+  }
+
+  getDirection(dir: Direction, Cord: number):number {
+    let newCord;
+    switch (dir) {
+      case Direction.TOP:
+        newCord = Cord - 1;
+        break;
+      case Direction.BOTTOM:
+        newCord = Cord + 1;
+        break;
+      case Direction.RIGHT:
+        newCord = Cord + 1;
+        break;
+      case Direction.LEFT:
+        newCord = Cord - 1;
+        break;
+    }
+    return;
+  }
+
+  doMove(move: Move) {
+    this._board[move.yCord][move.xCord] = this._board[move.yCordFrom][move.xCordFrom];
+    this._board[move.yCordFrom][move.xCordFrom] = null;
+
+    switch (this._currenPlayer) {
+      case Color.BLACK:
+        this._currenPlayer = Color.WHITE
+        break;
+      case Color.WHITE:
+        this._currenPlayer = Color.BLACK
+        break;
+    }
+  }
+
 
   getCurrentBoard() {
-    this.calculateBoard();
     return this._board;
   }
 }

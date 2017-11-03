@@ -12,3 +12,8 @@ mat-grid-list {
     background-color: black;
 }
 
+button {
+    background-color: red;
+    height: 100%;
+    width: 100%;
+}

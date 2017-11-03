@@ -1,1 +1,3 @@
-<p [class.red]="figure.Moves.length > 0">{{figure.color}}</p>
+<button mat-button [disabled]="!moves.length > 0" (click)="selected()">
+    <p [class.red]="moves.length > 0">{{figure.color}}</p>
+</button>
