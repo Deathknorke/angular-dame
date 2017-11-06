@@ -36,6 +36,8 @@ export class GameLogicService {
   private _currenPlayer: Color = Color.WHITE;
   private _playgroundSize = 8;
 
+  public _winPlayer: Color;
+
   constructor() {
     this.onInit();
   }
@@ -211,7 +213,7 @@ export class GameLogicService {
       this._board[move.yCordPunch][move.xCordPunch] = null;
       this._punches = [];
       this._moves = [];
-      this.calculateAllMoves();
+      this.checkAllPunches(move.yCordDest,move.xCordDest);
       if (this._punches.length > 0) {
         canChangePlayer = false;
       }
@@ -251,6 +253,30 @@ export class GameLogicService {
     if (move.yCordDest == enemyLine) {
       this._board[move.yCordDest][move.xCordDest].Dame = true;
     }
+  }
+
+  checkWin() {
+    let white;
+    let black;
+
+    for (var i = 0; i < this._board.length; i++) {
+      for (var j = 0; j < this._board[i].length; j++) {
+        const cell = this._board[i][j];
+        if (cell != null) {
+          if (cell.color == Color.BLACK) {
+            black += 1;
+          } else {
+            white += 1;
+          }
+        }
+      }
+    }
+    if(white ===undefined){
+      this._winPlayer = Color.BLACK;
+    }else if(black === undefined){
+      this._winPlayer = Color.WHITE;
+    }
+
   }
 
   getCurrentBoard() {

@@ -7,12 +7,14 @@ import { BoardComponent } from './board/board.component';
 import { FigureComponent } from './figure/figure.component';
 
 import { GameLogicService } from './game-logic.service';
+import { WinScreenComponent } from './win-screen/win-screen.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     BoardComponent,
-    FigureComponent
+    FigureComponent,
+    WinScreenComponent
   ],
   imports: [
     BrowserModule,

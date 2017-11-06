@@ -4,5 +4,7 @@
     Welcome to {{title}}!
   </h1>
 </div>
-<app-board></app-board>
+<app-board *ngIf="gameService._winPlayer == undefined"></app-board>
+<app-win-screen *ngIf="gameService._winPlayer != undefined" [player]="gameService._winPlayer"></app-win-screen>
+
 
