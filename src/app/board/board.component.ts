@@ -21,7 +21,7 @@ export class BoardComponent implements OnInit {
     return this.displayedMoves && this.getMove(yCord,xCord);
   }
   getMove(yCord:number, xCord:number):Move{
-    return this.displayedMoves.find(move => move.xCord == xCord && move.yCord == yCord);
+    return this.displayedMoves.find(move => move.xCordDest == xCord && move.yCordDest == yCord);
   }
 
   doMove(yCord:number,xCord:number){

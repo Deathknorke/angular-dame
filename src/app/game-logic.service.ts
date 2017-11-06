@@ -7,8 +7,12 @@ export class Figure {
 }
 
 export class Move {
-  public Punch = false;
-  constructor(public yCord: number, public xCord: number, public yCordFrom: number, public xCordFrom: number) { }
+  constructor(public yCordDest: number, public xCordDest: number, public yCordSource: number, public xCordSource: number) { }
+}
+export class Punch implements Move {
+  constructor(public yCordDest: number, public xCordDest: number, public yCordSource: number, public xCordSource: number,
+    public yCordPunch: number, public xCordPunch: number) { }
+
 }
 
 export enum Color {
@@ -27,7 +31,8 @@ enum Direction {
 export class GameLogicService {
 
   private _board: Figure[][];
-
+  private _moves: Move[] = [];
+  private _punches: Move[] = [];
   private _currenPlayer: Color = Color.WHITE;
   private _playgroundSize = 8;
 
@@ -68,46 +73,116 @@ export class GameLogicService {
   }
 
   getMoves(yCord: number, xCord: number): Move[] {
+
     if (this._board[yCord][xCord].color != this._currenPlayer) {
       return [];
     }
-    const possibleMoves = [];
 
-    let move = this.checkMove(yCord,xCord,Direction.BOTTOM,Direction.LEFT);
-    if(move){
-      possibleMoves.push(move);
-    }
-    move = this.checkMove(yCord,xCord,Direction.BOTTOM,Direction.RIGHT);
-    if(move){
-      possibleMoves.push(move);
-    }
-    move = this.checkMove(yCord,xCord,Direction.TOP,Direction.LEFT);
-    if(move){
-      possibleMoves.push(move);
-    }
-    move = this.checkMove(yCord,xCord,Direction.TOP,Direction.RIGHT);
-    if(move){
-      possibleMoves.push(move);
+    if (this._punches.length == 0 || this._moves.length == 0) {
+      this.calculateAllMoves();
     }
 
-    return possibleMoves;
+    if (this._punches.length > 0) {
+      return this._punches.filter(move => move.xCordSource == xCord && move.yCordSource == yCord);
+    } else {
+      return this._moves.filter(move => move.xCordSource == xCord && move.yCordSource == yCord);
+    }
   }
 
-  checkMove(yCord: number, xCord: number, yDir: Direction,xDir:Direction):Move {
+  calculateAllMoves() {
+    this._moves = [];
+    this._punches = [];
+    for (var i = 0; i < this._board.length; i++) {
+      for (var j = 0; j < this._board[i].length; j++) {
+        if (this._board[i][j] != null && this._board[i][j].color == this._currenPlayer) {
 
-    const yTo = this.getDirection(yDir, yCord);
-    const xTo = this.getDirection(xDir, xCord);
-    if ((yTo) < this._board.length && (xTo) < this._board.length) {
-      const cell = this._board[yCord + 1][xCord + 1];
-      if (cell == null) {
-        return new Move(yTo, xTo, yCord, xCord);
-      } else {
-        //Todo check for punch
+          this.checkAllMoves(i, j);
+          this.checkAllPunches(i, j);
+        }
       }
     }
   }
 
-  getDirection(dir: Direction, Cord: number):number {
+  checkAllMoves(yCord: number, xCord: number) {
+
+    this.checkMove(yCord, xCord, Direction.BOTTOM, Direction.LEFT);
+    this.checkMove(yCord, xCord, Direction.BOTTOM, Direction.RIGHT);
+    this.checkMove(yCord, xCord, Direction.TOP, Direction.LEFT);
+    this.checkMove(yCord, xCord, Direction.TOP, Direction.RIGHT);
+  }
+
+  checkAllPunches(yCord: number, xCord: number) {
+
+    this.checkPunch(yCord, xCord, Direction.BOTTOM, Direction.LEFT);
+    this.checkPunch(yCord, xCord, Direction.BOTTOM, Direction.RIGHT);
+    this.checkPunch(yCord, xCord, Direction.TOP, Direction.LEFT);
+    this.checkPunch(yCord, xCord, Direction.TOP, Direction.RIGHT);
+  }
+
+  checkMove(yCordSource: number, xCordSource: number, yDir: Direction, xDir: Direction) {
+    let yCordDest = this.getDirection(yDir, yCordSource);
+    let xCordDest = this.getDirection(xDir, xCordSource);
+    if (yCordDest < this._board.length && xCordDest < this._board.length && yCordDest >= 0 && xCordDest >= 0) {
+      let cell = this._board[yCordDest][xCordDest];
+      if (cell == null && (yDir == this.getAllowedMoveDirection() || this._board[yCordSource][xCordSource].Dame)) {
+
+        if (this._board[yCordSource][xCordSource].Dame) {
+          while (cell == null && yCordDest < this._board.length && xCordDest < this._board.length && yCordDest >= 0 && xCordDest >= 0) {
+
+            this._moves.push(new Move(yCordDest, xCordDest, yCordSource, xCordSource));
+            yCordDest = this.getDirection(yDir, yCordDest);
+            xCordDest = this.getDirection(xDir, xCordDest);
+            if (yCordDest < this._board.length && xCordDest < this._board.length && yCordDest >= 0 && xCordDest >= 0) {
+              cell = this._board[yCordDest][xCordDest];
+            }
+          }
+        } else {
+          this._moves.push(new Move(yCordDest, xCordDest, yCordSource, xCordSource));
+        }
+      }
+    }
+  }
+
+  checkPunch(yCord: number, xCord: number, yDir: Direction, xDir: Direction) {
+    let yCordEnemy = this.getDirection(yDir, yCord);
+    let xCordEnemy = this.getDirection(xDir, xCord);
+    if (yCordEnemy < this._board.length && xCordEnemy < this._board.length && yCordEnemy >= 0 && xCordEnemy >= 0) {
+
+      let cell = this._board[yCordEnemy][xCordEnemy];
+      if (this._board[yCord][xCord].Dame)
+        while (cell == null && yCordEnemy < this._board.length && xCordEnemy < this._board.length && yCordEnemy >= 0 && xCordEnemy >= 0) {
+
+          yCordEnemy = this.getDirection(yDir, yCordEnemy);
+          xCordEnemy = this.getDirection(xDir, xCordEnemy);
+          if (yCordEnemy < this._board.length && xCordEnemy < this._board.length && yCordEnemy >= 0 && xCordEnemy >= 0) {
+
+            cell = this._board[yCordEnemy][xCordEnemy];
+          }
+        }
+      if (cell != null && cell.color != this._currenPlayer) {
+
+        const yCordDest = this.getDirection(yDir, yCordEnemy);
+        const xCordDest = this.getDirection(xDir, xCordEnemy);
+        if (yCordDest < this._board.length && xCordDest < this._board.length && yCordDest >= 0 && xCordDest >= 0) {
+          if (this._board[yCordDest][xCordDest] == null) {
+
+            this._punches.push(new Punch(yCordDest, xCordDest, yCord, xCord, yCordEnemy, xCordEnemy));
+          }
+        }
+      }
+    }
+  }
+
+  getAllowedMoveDirection(): Direction {
+    switch (this._currenPlayer) {
+      case Color.BLACK:
+        return Direction.BOTTOM;
+      case Color.WHITE:
+        return Direction.TOP;
+    }
+  }
+
+  getDirection(dir: Direction, Cord: number): number {
     let newCord;
     switch (dir) {
       case Direction.TOP:
@@ -123,13 +198,32 @@ export class GameLogicService {
         newCord = Cord - 1;
         break;
     }
-    return;
+    return newCord;
   }
 
   doMove(move: Move) {
-    this._board[move.yCord][move.xCord] = this._board[move.yCordFrom][move.xCordFrom];
-    this._board[move.yCordFrom][move.xCordFrom] = null;
+    let canChangePlayer = true;
+    this._board[move.yCordDest][move.xCordDest] = this._board[move.yCordSource][move.xCordSource];
+    this._board[move.yCordSource][move.xCordSource] = null;
 
+    if (move instanceof Punch) {
+      debugger;
+      this._board[move.yCordPunch][move.xCordPunch] = null;
+      this._punches = [];
+      this._moves = [];
+      this.calculateAllMoves();
+      if (this._punches.length > 0) {
+        canChangePlayer = false;
+      }
+    }
+
+    this.checkForQueen(move);
+    if (canChangePlayer) {
+      this.doChangePlayer();
+    }
+  }
+
+  doChangePlayer() {
     switch (this._currenPlayer) {
       case Color.BLACK:
         this._currenPlayer = Color.WHITE
@@ -138,8 +232,26 @@ export class GameLogicService {
         this._currenPlayer = Color.BLACK
         break;
     }
+
+    this._punches = [];
+    this._moves = [];
   }
 
+  checkForQueen(move: Move) {
+    let enemyLine = -1;
+
+    switch (this.getAllowedMoveDirection()) {
+      case Direction.BOTTOM:
+        enemyLine = this._board.length - 1;
+        break;
+      case Direction.TOP:
+        enemyLine = 0;
+        break;
+    }
+    if (move.yCordDest == enemyLine) {
+      this._board[move.yCordDest][move.xCordDest].Dame = true;
+    }
+  }
 
   getCurrentBoard() {
     return this._board;

@@ -5,6 +5,9 @@ p {
 .red{
     color: red;
 }
+.green{
+    color: green;
+}
 
 button {
     background-color: transparent;
