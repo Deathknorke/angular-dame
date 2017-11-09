@@ -213,13 +213,14 @@ export class GameLogicService {
       this._board[move.yCordPunch][move.xCordPunch] = null;
       this._punches = [];
       this._moves = [];
-      this.checkAllPunches(move.yCordDest,move.xCordDest);
+      this.checkAllPunches(move.yCordDest, move.xCordDest);
       if (this._punches.length > 0) {
         canChangePlayer = false;
       }
     }
 
     this.checkForQueen(move);
+    this.checkWin();
     if (canChangePlayer) {
       this.doChangePlayer();
     }
@@ -239,6 +240,13 @@ export class GameLogicService {
     this._moves = [];
   }
 
+  resetPlayground() {
+    this._winPlayer = undefined;
+    this._punches = [];
+    this._moves = [];
+   this._board = this.generateStartBoard();
+  }
+
   checkForQueen(move: Move) {
     let enemyLine = -1;
 
@@ -256,8 +264,8 @@ export class GameLogicService {
   }
 
   checkWin() {
-    let white;
-    let black;
+    let white = 0;
+    let black = 0;
 
     for (var i = 0; i < this._board.length; i++) {
       for (var j = 0; j < this._board[i].length; j++) {
@@ -271,9 +279,10 @@ export class GameLogicService {
         }
       }
     }
-    if(white ===undefined){
+    debugger;
+    if (white == 0) {
       this._winPlayer = Color.BLACK;
-    }else if(black === undefined){
+    } else if (black == 0) {
       this._winPlayer = Color.WHITE;
     }
 

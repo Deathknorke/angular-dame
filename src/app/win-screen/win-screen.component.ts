@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Color } from '../game-logic.service';
+import { Color, GameLogicService } from '../game-logic.service';
 
 @Component({
   selector: 'app-win-screen',
@@ -8,11 +8,15 @@ import { Color } from '../game-logic.service';
 })
 export class WinScreenComponent implements OnInit {
 
-  @Input() player : Color;
+  @Input() player: Color;
 
-  constructor() { }
+  constructor(private gameService: GameLogicService) { }
 
   ngOnInit() {
+  }
+
+  restartGame() {
+    this.gameService.resetPlayground();
   }
 
 }

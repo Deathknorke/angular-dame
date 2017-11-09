@@ -1,3 +1,4 @@
 <p>
-  Player {{player}} wins!
+  Player {{player == 0 ? "Grey" : "White" }} wins!
 </p>
+<button mat-button (click)="restartGame()">Play Again!</button>
