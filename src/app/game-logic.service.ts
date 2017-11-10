@@ -209,7 +209,6 @@ export class GameLogicService {
     this._board[move.yCordSource][move.xCordSource] = null;
 
     if (move instanceof Punch) {
-      debugger;
       this._board[move.yCordPunch][move.xCordPunch] = null;
       this._punches = [];
       this._moves = [];
@@ -279,7 +278,6 @@ export class GameLogicService {
         }
       }
     }
-    debugger;
     if (white == 0) {
       this._winPlayer = Color.BLACK;
     } else if (black == 0) {
