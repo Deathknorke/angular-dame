@@ -7,7 +7,7 @@ script:
 - yarn
 - ng build --prod
 - mkdir ../dist
-- mv ./angular-dame/dist/* ../dist
+- mv ./dist/* ../dist
 - rm -rf ./angular-dame
 deploy:
   provider: heroku
