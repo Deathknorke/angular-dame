@@ -6,6 +6,7 @@ install:
 script:
 - yarn
 - ng build --prod
+- mkdir ../dist
 - mv ./angular-dame/dist/* ../dist
 - rm -rf ./angular-dame
 deploy:
