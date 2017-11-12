@@ -1,3 +1,13 @@
+language: node_js
+node_js:
+- '8'
+install:
+- yarn global add @angular/cli
+script:
+- yarn
+- ng build --prod
+- mv ./angular-dame/dist/* ../dist
+- rm -rf ./angular-dame
 deploy:
   provider: heroku
   app: angular-dame
