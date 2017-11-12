@@ -1,16 +1,21 @@
 language: node_js
 node_js:
 - '8'
-install:
-- yarn global add @angular/cli
+branches:
+  only:
+    - master
+
+before_script:
+  - npm install -g firebase-tools
+  - npm install -g @angular/cli
+
 script:
-- yarn
-- ng build --prod
-- mkdir ../dist
-- mv ./dist/* ../dist
-- rm -rf ./angular-dame
-deploy:
-  provider: heroku
-  app: angular-dame
-  api_key:
-    secure: EnMNzRNva7Zu9j7G6OUMnuCSF8Ilxovd4JooWfq6sVXAK3DJ38lfYnaW1XNpKWJuq8ytn6tKPFZn7lXL6sbwnselPhX4JMfFQYpIT82hKbI0JswzwVlgJQhIIUCAWPDuU4DqHPqhI/otbHldOGDwGkurP0L3gFP031/MBHhqnsB5sNoWj/qmh3BBen8/R8+C9Iq/DUW1EegDZ1BkXU96uudELWnC5yROerE+9DrLxGGf4MxktXWJmWSGPO+OBGNsbxkXGp+0O9ZXmroN+AMYL3g2ufiH1yI3Y//ZHaiy6OJf+0wrT/ZKf+Hw8udKbcAc3Trvrb91tPzGrbSX9KTX+v7hzd+JK6XobhBbXtASBQM7nm7g8WlWbhJDPb8yihEUf7qTB5IpouXpcsXvtYQKOfuMEw+K2Xb/sBGcSAHjzdPaxoE036n9ck+GMMK+U22/a4cbBB0Y15c051PwKYrMKHl1wNoQeGWX0bRVutO7jXPkJIV5uEpD3ksvKTcF8t0faZJgNHM5Bk0g+/KWzrR061049s75Caueig7AOyzTWYgoHz2X9GOw9zlYQp3XrcGWfnW/x/s/u/TUaVv9cBvH5o9JMHO8MAtpaES5PtEaBd9TcpRU1nN1fQK/ph9WqAf0i8juEh1xglopMwhZTd5UAVqYtjIN6eSYPySBGBOLei8=
+  - ng build --prod
+
+after_success:
+  - firebase deploy --token 1/aLywalWg_YKchqLCCAQvu7I6OFl3T_BHoCDfOSeL7Ax5EH8CxW4yeM-LsqJ25XEj
+
+notifications:
+  email:
+    on_failure: change
+    on_success: change
