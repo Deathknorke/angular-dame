@@ -30,7 +30,7 @@ export class BoardComponent implements OnInit {
     this.displayedMoves = [];
   }
 
-  getMoves(yCord:number,xCord:number){
+  getMoves(yCord:number,xCord:number): Move []{
    return this.game.getMoves(yCord,xCord);
   }
 

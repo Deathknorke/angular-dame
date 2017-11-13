@@ -1,7 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Move } from '../game-logic.service';
-
-import { Figure, Color } from '../game-logic.service';
+import { Figure, Color, Move } from '../game-logic.service';
 
 @Component({
   selector: 'app-figure',
@@ -18,7 +16,7 @@ export class FigureComponent implements OnInit {
   ngOnInit() {
   }
 
-  getFigureIcon() {
+  getFigureIcon(): String {
     switch (this.figure.color) {
       case Color.BLACK:
         if (this.figure.Dame) {

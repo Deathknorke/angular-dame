@@ -33,7 +33,7 @@ export class GameLogicService {
   private _board: Figure[][];
   private _moves: Move[] = [];
   private _punches: Move[] = [];
-  private _currenPlayer: Color = Color.WHITE;
+  private _currentPlayer: Color = Color.WHITE;
   private _playgroundSize = 8;
 
   public _winPlayer: Color;
@@ -42,7 +42,7 @@ export class GameLogicService {
     this.onInit();
   }
 
-  onInit() {
+  private onInit() {
     this._board = this.generateStartBoard();
   }
 
@@ -74,9 +74,9 @@ export class GameLogicService {
     return board;
   }
 
-  getMoves(yCord: number, xCord: number): Move[] {
+  public getMoves(yCord: number, xCord: number): Move[] {
 
-    if (this._board[yCord][xCord].color != this._currenPlayer) {
+    if (this._board[yCord][xCord].color != this._currentPlayer) {
       return [];
     }
 
@@ -91,12 +91,12 @@ export class GameLogicService {
     }
   }
 
-  calculateAllMoves() {
+ private calculateAllMoves() {
     this._moves = [];
     this._punches = [];
     for (var i = 0; i < this._board.length; i++) {
       for (var j = 0; j < this._board[i].length; j++) {
-        if (this._board[i][j] != null && this._board[i][j].color == this._currenPlayer) {
+        if (this._board[i][j] != null && this._board[i][j].color == this._currentPlayer) {
 
           this.checkAllMoves(i, j);
           this.checkAllPunches(i, j);
@@ -105,7 +105,7 @@ export class GameLogicService {
     }
   }
 
-  checkAllMoves(yCord: number, xCord: number) {
+  private checkAllMoves(yCord: number, xCord: number) {
 
     this.checkMove(yCord, xCord, Direction.BOTTOM, Direction.LEFT);
     this.checkMove(yCord, xCord, Direction.BOTTOM, Direction.RIGHT);
@@ -113,7 +113,7 @@ export class GameLogicService {
     this.checkMove(yCord, xCord, Direction.TOP, Direction.RIGHT);
   }
 
-  checkAllPunches(yCord: number, xCord: number) {
+  private checkAllPunches(yCord: number, xCord: number) {
 
     this.checkPunch(yCord, xCord, Direction.BOTTOM, Direction.LEFT);
     this.checkPunch(yCord, xCord, Direction.BOTTOM, Direction.RIGHT);
@@ -121,7 +121,7 @@ export class GameLogicService {
     this.checkPunch(yCord, xCord, Direction.TOP, Direction.RIGHT);
   }
 
-  checkMove(yCordSource: number, xCordSource: number, yDir: Direction, xDir: Direction) {
+  private checkMove(yCordSource: number, xCordSource: number, yDir: Direction, xDir: Direction) {
     let yCordDest = this.getDirection(yDir, yCordSource);
     let xCordDest = this.getDirection(xDir, xCordSource);
     if (yCordDest < this._board.length && xCordDest < this._board.length && yCordDest >= 0 && xCordDest >= 0) {
@@ -145,7 +145,7 @@ export class GameLogicService {
     }
   }
 
-  checkPunch(yCord: number, xCord: number, yDir: Direction, xDir: Direction) {
+  private checkPunch(yCord: number, xCord: number, yDir: Direction, xDir: Direction) {
     let yCordEnemy = this.getDirection(yDir, yCord);
     let xCordEnemy = this.getDirection(xDir, xCord);
     if (yCordEnemy < this._board.length && xCordEnemy < this._board.length && yCordEnemy >= 0 && xCordEnemy >= 0) {
@@ -161,7 +161,7 @@ export class GameLogicService {
             cell = this._board[yCordEnemy][xCordEnemy];
           }
         }
-      if (cell != null && cell.color != this._currenPlayer) {
+      if (cell != null && cell.color != this._currentPlayer) {
 
         const yCordDest = this.getDirection(yDir, yCordEnemy);
         const xCordDest = this.getDirection(xDir, xCordEnemy);
@@ -175,8 +175,8 @@ export class GameLogicService {
     }
   }
 
-  getAllowedMoveDirection(): Direction {
-    switch (this._currenPlayer) {
+  private getAllowedMoveDirection(): Direction {
+    switch (this._currentPlayer) {
       case Color.BLACK:
         return Direction.BOTTOM;
       case Color.WHITE:
@@ -184,7 +184,7 @@ export class GameLogicService {
     }
   }
 
-  getDirection(dir: Direction, Cord: number): number {
+  private getDirection(dir: Direction, Cord: number): number {
     let newCord;
     switch (dir) {
       case Direction.TOP:
@@ -203,7 +203,7 @@ export class GameLogicService {
     return newCord;
   }
 
-  doMove(move: Move) {
+  public doMove(move: Move) {
     let canChangePlayer = true;
     this._board[move.yCordDest][move.xCordDest] = this._board[move.yCordSource][move.xCordSource];
     this._board[move.yCordSource][move.xCordSource] = null;
@@ -225,13 +225,13 @@ export class GameLogicService {
     }
   }
 
-  doChangePlayer() {
-    switch (this._currenPlayer) {
+  private doChangePlayer() {
+    switch (this._currentPlayer) {
       case Color.BLACK:
-        this._currenPlayer = Color.WHITE
+        this._currentPlayer = Color.WHITE
         break;
       case Color.WHITE:
-        this._currenPlayer = Color.BLACK
+        this._currentPlayer = Color.BLACK
         break;
     }
 
@@ -239,14 +239,14 @@ export class GameLogicService {
     this._moves = [];
   }
 
-  resetPlayground() {
+  public resetPlayground() {
     this._winPlayer = undefined;
     this._punches = [];
     this._moves = [];
    this._board = this.generateStartBoard();
   }
 
-  checkForQueen(move: Move) {
+  private checkForQueen(move: Move) {
     let enemyLine = -1;
 
     switch (this.getAllowedMoveDirection()) {
@@ -262,7 +262,7 @@ export class GameLogicService {
     }
   }
 
-  checkWin() {
+  private checkWin() {
     let white = 0;
     let black = 0;
 
@@ -286,7 +286,7 @@ export class GameLogicService {
 
   }
 
-  getCurrentBoard() {
+  public getCurrentBoard() {
     return this._board;
   }
 }
